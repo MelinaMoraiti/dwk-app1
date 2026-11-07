@@ -20,6 +20,18 @@ jobs:
 
       - name: Build and publish backend
         run: |-
-          docker build --tag "mluukkai/dwk1" .
-          docker push "mluukkai/dwk1"
+          docker build --tag "mluukkai/dwk1:$GITHUB_SHA" .
+          docker push "mluukkai/dwk1:$GITHUB_SHA"
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v3
+
+      - name: Use right image
+        run: kustomize edit set image PROJECT/IMAGE=mluukkai/dwk1:$GITHUB_SHA
+
+      - name: commit kustomization.yaml to GitHub
+        uses: EndBug/add-and-commit@v10
+        with:
+          add: 'kustomization.yaml'
+          message: New version released ${{ github.sha }}
   
